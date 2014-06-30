@@ -1,1 +1,190 @@
-Hello Github
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Lissajous Curve with Three.js.</title>
+	<<style type="text/css" media="screen">
+		body{
+			background-color: #000;
+			color: #fff;
+		}
+		#glContainer{
+			position: absolute; 
+			left: 0px; 
+			top: 0px
+		}
+		canvas{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+
+<body>
+<div id="glContainer"></div>
+<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>	
+<script type="text/javascript" src="js/three.min.js"></script>
+<script src="js/Detector.js"></script>
+<script src="js/Stats.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/DAT.GUI.min.js"></script>
+<script src="js/Lissajous.js"></script>
+
+<script type="text/javascript">
+
+var glContainer,
+	SCREEN_WIDTH,
+	SCREEN_HEIGHT,
+	scene,
+	camera,
+	light, 
+	renderer,
+	clock,
+	controls,
+	stats,
+	gui;
+
+var lissajousCurve;
+
+$(document).ready(function(){
+	init();
+	animate();
+});
+
+function init() {
+	glContainer = document.getElementById('glContainer');
+	SCREEN_WIDTH = window.innerWidth;
+	SCREEN_HEIGHT = window.innerHeight;	
+
+	iniSceneRenderer();
+	iniCamera();
+	iniLight();
+	iniMesh();
+	iniHelper();
+}
+
+function iniSceneRenderer(){	
+	scene = new THREE.Scene();
+	if ( Detector.webgl )
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	else
+		renderer = new THREE.CanvasRenderer(); 
+	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glContainer.appendChild(renderer.domElement);
+}
+
+function iniCamera(){
+	camera = new THREE.PerspectiveCamera(75, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
+	camera.position.set(0,150,250);
+	camera.lookAt(scene.position);
+	scene.add(camera);
+}
+
+function iniLight(){
+	light = new THREE.PointLight(0xffffff);
+	light.position.set(100,250,0);
+	scene.add(light);
+}
+
+function iniMesh(){
+	// var planeGeometry = new THREE.PlaneGeometry( 1000, 1000, 10, 10 );
+	// var planeMaterial = new THREE.MeshBasicMaterial( {color: 0xefefef, side: THREE.DoubleSide} );
+	// var floor = new THREE.Mesh(planeGeometry, planeMaterial);
+	// floor.position.y = -1;
+	// floor.rotation.x = Math.PI / 2.0;
+	// scene.add(floor);
+
+	lissajousCurve = new LissajousCurve();
+	lissajousCurve.meshObject.name = "Lissa";
+	lissajousCurve.createMesh();
+	scene.add(lissajousCurve.meshObject);
+}
+
+function iniHelper(){
+	clock = new THREE.Clock();
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	var axes = new THREE.AxisHelper(100);
+	//scene.add( axes );
+	stats = new Stats();
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.bottom = '0px';
+	stats.domElement.style.zIndex = 100;
+	glContainer.appendChild( stats.domElement );
+
+	gui = new dat.GUI();
+
+	var parameters = {
+		color: "#cc0000",
+		fa: 4.0,
+		fb: 3.0,
+		fc: 2.0,
+		phaseX: 0.0,
+		phaseY: 0.0,
+		phaseZ: 0.0,
+		step: 0.02
+    };
+    lissajousCurve.setParameters(parameters);
+    lissajousCurve.update();    
+
+	var factorA = gui.add(parameters, "fa").min(0).max(10).step(1).listen();
+	var factorB = gui.add(parameters, "fb").min(0).max(10).step(1).listen();
+	var factorC = gui.add(parameters, "fc").min(0).max(10).step(1).listen();
+	var phaseX = gui.add(parameters, "phaseX").min(0).max(10).step(1).listen();
+	var phaseY = gui.add(parameters, "phaseY").min(0).max(10).step(1).listen();
+	var phaseZ = gui.add(parameters, "phaseZ").min(0).max(10).step(1).listen();
+	//var step = gui.add(parameters, "step").min(0.01).max(0.1).step(0.01).listen();
+
+	factorA.onChange(function(value){
+		lissajousCurve.fa = value;
+		lissajousCurve.update();
+	});
+	factorB.onChange(function(value){
+		lissajousCurve.fb = value;
+		lissajousCurve.update();
+	});
+	factorC.onChange(function(value){
+		lissajousCurve.fc = value;
+		lissajousCurve.update();
+	});
+	phaseX.onChange(function(value){
+		lissajousCurve.phaseX = value;
+		lissajousCurve.update();
+	});
+	phaseY.onChange(function(value){
+		lissajousCurve.phaseY = value;
+		lissajousCurve.update();
+	});
+	phaseZ.onChange(function(value){
+		lissajousCurve.phaseZ = value;
+		lissajousCurve.update();
+	});
+	// step.onChange(function(value){
+	// 	lissajousCurve.step = value;
+	// 	lissajousCurve.update();
+	// });
+
+	var lineColor = gui.addColor( parameters, 'color' ).name('Color').listen();
+	lineColor.onChange(function(value) 
+	{   lissajousCurve.meshObject.children[0].material.color.setHex( value.replace("#", "0x") );   });
+
+	gui.open();
+}
+
+
+function animate() {
+	requestAnimationFrame(animate);
+	renderer.render(scene, camera);
+	updateHelper();
+};
+
+function updateHelper(){
+	var delta = clock.getDelta(); 
+	controls.update();
+	stats.update();	
+}
+</script>
+</body>
+
+</html>
