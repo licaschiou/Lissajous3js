@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 
 <html>
-
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Lissajous Curve with Three.js.</title>
@@ -23,17 +22,20 @@
 </head>
 
 <body>
-<div id="glContainer"></div>
-<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>	
+
+	<div id="glContainer"></div>
+
+<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="js/three.min.js"></script>
-<script src="js/Detector.js"></script>
-<script src="js/Stats.js"></script>
-<script src="js/OrbitControls.js"></script>
-<script src="js/DAT.GUI.min.js"></script>
-<script src="js/Lissajous.js"></script>
+<script type="text/javascript" src="js/Detector.js"></script>
+<script type="text/javascript" src="js/Stats.js"></script>
+<script type="text/javascript" src="js/OrbitControls.js"></script>
+<script type="text/javascript" src="js/THREEx.WindowResize.js"></script>
+
+<script type="text/javascript" src="js/DAT.GUI.min.js"></script>
+<script type="text/javascript" src="js/Lissajous.js"></script>
 
 <script type="text/javascript">
-
 var glContainer,
 	SCREEN_WIDTH,
 	SCREEN_HEIGHT,
@@ -63,6 +65,8 @@ function init() {
 	iniLight();
 	iniMesh();
 	iniHelper();
+
+	THREEx.WindowResize(renderer, camera);
 }
 
 function iniSceneRenderer(){	
@@ -73,6 +77,7 @@ function iniSceneRenderer(){
 		renderer = new THREE.CanvasRenderer(); 
 	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glContainer.appendChild(renderer.domElement);
+
 }
 
 function iniCamera(){
@@ -89,13 +94,6 @@ function iniLight(){
 }
 
 function iniMesh(){
-	// var planeGeometry = new THREE.PlaneGeometry( 1000, 1000, 10, 10 );
-	// var planeMaterial = new THREE.MeshBasicMaterial( {color: 0xefefef, side: THREE.DoubleSide} );
-	// var floor = new THREE.Mesh(planeGeometry, planeMaterial);
-	// floor.position.y = -1;
-	// floor.rotation.x = Math.PI / 2.0;
-	// scene.add(floor);
-
 	lissajousCurve = new LissajousCurve();
 	lissajousCurve.meshObject.name = "Lissa";
 	lissajousCurve.createMesh();
@@ -116,7 +114,10 @@ function iniHelper(){
 	gui = new dat.GUI();
 
 	var parameters = {
+		meshType: "Line",
 		color: "#cc0000",
+		material: "Basic",
+		RibbonWidth: 5.0,
 		fa: 4.0,
 		fb: 3.0,
 		fc: 2.0,
@@ -125,8 +126,21 @@ function iniHelper(){
 		phaseZ: 0.0,
 		step: 0.02
     };
-    lissajousCurve.setParameters(parameters);
-    lissajousCurve.update();    
+
+    //lissajousCurve.setParameters(parameters);
+    //lissajousCurve.update();
+
+    var meshType = gui.add( parameters, 'meshType', [ "Line", "Ribbon"] ).name('MeshType').listen();
+	meshType.onChange(function(value){
+		lissajousCurve.meshType = value;
+		lissajousCurve.update();
+	});
+
+	var ribbonWidth = gui.add(parameters, "RibbonWidth").min(1).max(20).step(1).listen();
+	ribbonWidth.onChange(function(value){
+		lissajousCurve.ribbonWidth = value;
+		lissajousCurve.update();
+	});
 
 	var factorA = gui.add(parameters, "fa").min(0).max(10).step(1).listen();
 	var factorB = gui.add(parameters, "fb").min(0).max(10).step(1).listen();
@@ -165,9 +179,19 @@ function iniHelper(){
 	// 	lissajousCurve.update();
 	// });
 
-	var lineColor = gui.addColor( parameters, 'color' ).name('Color').listen();
-	lineColor.onChange(function(value) 
-	{   lissajousCurve.meshObject.children[0].material.color.setHex( value.replace("#", "0x") );   });
+	var materialColor = gui.addColor( parameters, 'color' ).name('Color').listen();
+	materialColor.onChange(function(value){
+		lissajousCurve.color = value;
+		lissajousCurve.meshObject.children[0].material.color.setHex( value.replace("#", "0x") );   
+	});
+
+	var lissaMaterial = gui.add( parameters, 'material', [ "Basic", "Lambert", "Phong", "Wireframe" ] ).name('Material Type').listen();
+	lissaMaterial.onChange(function(value){
+		lissajousCurve.meterial = value;
+		if(parameters.meshType == "Ribbon"){			
+			lissajousCurve.update();
+		}		
+	});
 
 	gui.open();
 }
