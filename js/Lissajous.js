@@ -53,7 +53,7 @@ function LissajousCurve(){
   }
   
   this.createMesh = function(){
-    this.numCurveVertices = Math.floor((Math.PI * 2 + this.step)/this.step);
+    this.numCurveVertices = Math.floor((Math.PI * 2 + 4 * this.step)/this.step);
 
     for(var i = 0; i < this.numCurveVertices; i++){
       this.curveVertices[i] = new THREE.Vector3();
@@ -96,11 +96,29 @@ function LissajousCurve(){
         vertArray.push(newVertex);
         newVertex = new THREE.Vector3().subVectors(va, vecCrossParallel);
         vertArray.push(newVertex);
+
+        //checking inversing vertex
+        if(vertArray.length > 4){
+          var v0 = vertArray[vertArray.length-4].clone();
+          var v1 = vertArray[vertArray.length-3].clone();
+          var v2 = vertArray[vertArray.length-2].clone();
+          var v3 = vertArray[vertArray.length-1].clone();
+          var v02 = new THREE.Vector3().subVectors(v0, v2);
+          var v03 = new THREE.Vector3().subVectors(v0, v3);
+          if(v03.length() <= v02.length()){
+            vertArray[vertArray.length-1] = v2.clone();
+            vertArray[vertArray.length-2] = v3.clone();
+          }
+        }    
+
         if( i < this.curveVertices.length - 2){
           lissajourGeometry.faces.push(new THREE.Face3(i*2, i*2+1, i*2+2));
           lissajourGeometry.faces.push(new THREE.Face3(i*2+2, i*2+1, i*2+3));
         }        
       }
+
+      //console.log(vertArray);
+      //console.log(lissajourGeometry.faces);
 
       lissajourGeometry.computeCentroids();
       lissajourGeometry.computeFaceNormals();
