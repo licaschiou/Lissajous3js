@@ -16,7 +16,7 @@ function LissajousCurve(){
   this.numCurveVertices = 0.0; //Math.floor((Math.PI * 2 + this.step)/this.step)
   this.meterial = "Basic";
   this.meshObject = new THREE.Object3D();
-  this.color = "#cc0000";
+  this.color = "#ffffff";
   this.meshType = "Line";
   /*
     parameters = {
@@ -30,6 +30,8 @@ function LissajousCurve(){
     };
   */
   this.setParameters = function(parameters){
+    this.meshType = parameters.meshType;
+    this.meterial = parameters.material;
     this.color = parameters.color;
     this.fa = parameters.fa;
     this.fb = parameters.fb;
