@@ -13,22 +13,12 @@ function LissajousCurve(){
   this.curveVertices = new Array();
   this.ribbonVertices = new Array();
   this.lines = new Array();
-  this.numCurveVertices = 0.0; //Math.floor((Math.PI * 2 + this.step)/this.step)
+  this.numCurveVertices = 0.0; 
   this.meterial = "Basic";
   this.meshObject = new THREE.Object3D();
   this.color = "#ffffff";
   this.meshType = "Line";
-  /*
-    parameters = {
-      fa: 4.0,
-      fb: 3.0,
-      fc: 2.0,
-      phaseX: 0.0,
-      phaseY: 0.0,
-      phaseZ: 0,0,
-      step: 0.02
-    };
-  */
+ 
   this.setParameters = function(parameters){
     this.meshType = parameters.meshType;
     this.meterial = parameters.material;
@@ -119,12 +109,8 @@ function LissajousCurve(){
         }        
       }
 
-      //console.log(vertArray);
-      //console.log(lissajourGeometry.faces);
-
       lissajourGeometry.computeCentroids();
       lissajourGeometry.computeFaceNormals();
-      //var ribbonMaterial = new THREE.MeshBasicMaterial({wireframe:false, side: THREE.DoubleSide});
       var ribbonMaterial;
       if (this.meterial == "Basic")
         ribbonMaterial = new THREE.MeshBasicMaterial( {side: THREE.DoubleSide } );
