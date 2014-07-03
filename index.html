@@ -8,6 +8,7 @@
 		body{
 			background-color: #000;
 			color: #fff;
+			font-family: sans-serif;
 		}
 		#glContainer{
 			position: absolute; 
@@ -18,11 +19,24 @@
 			width: 100%;
 			height: 100%;
 		}
+		#backToHome{
+			position: fixed;
+			z-index: 999;
+			top: 5px;
+			left:; 5px;
+		}
+		a{	  
+			color: #ffffff;
+			text-decoration: none;
+		}
+		a:hover{
+			color: #03a9f4;
+		}
 	</style>
 </head>
 
 <body>
-
+	<div id='backToHome'><a href="http://licaschiou.github.io/portfolio2013/">&#171; back my portfolio page</a></div>
 	<div id="glContainer"></div>
 
 <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
@@ -41,7 +55,8 @@ var glContainer,
 	SCREEN_HEIGHT,
 	scene,
 	camera,
-	light, 
+	light,
+	ambientLight, 
 	renderer,
 	clock,
 	controls,
@@ -91,6 +106,10 @@ function iniLight(){
 	light = new THREE.PointLight(0xffffff);
 	light.position.set(100,250,0);
 	scene.add(light);
+
+	ambientLight = new THREE.AmbientLight(0x444444);
+	
+	scene.add(ambientLight);
 }
 
 function iniMesh(){
@@ -116,6 +135,7 @@ function iniHelper(){
 	var parameters = {
 		meshType: "Ribbon",
 		color: "#ffffff",
+		ambientColor: "#444444",
 		material: "Lambert",
 		RibbonWidth: 5.0,
 		fa: 5.0,
@@ -191,6 +211,11 @@ function iniHelper(){
 		if(parameters.meshType == "Ribbon"){			
 			lissajousCurve.update();
 		}		
+	});
+
+	var ambientColor = gui.addColor( parameters, 'ambientColor' ).name('AmbientColor').listen();
+	ambientColor.onChange(function(value){
+		ambientLight.color.setHex(value.replace("#", "0x"));
 	});
 
 	gui.open();
