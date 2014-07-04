@@ -138,6 +138,9 @@ function iniHelper(){
 		ambientColor: "#444444",
 		material: "Lambert",
 		RibbonWidth: 5.0,
+		sizeX: 80.0,
+		sizeY: 80.0,
+		sizeZ: 80.0,
 		fa: 5.0,
 		fb: 4.0,
 		fc: 2.0,
@@ -162,6 +165,9 @@ function iniHelper(){
 		lissajousCurve.update();
 	});
 
+	var sizeX = gui.add(parameters, "sizeX").min(50).max(200).step(5).listen();
+	var sizeY = gui.add(parameters, "sizeY").min(50).max(200).step(5).listen();
+	var sizeZ = gui.add(parameters, "sizeZ").min(50).max(200).step(5).listen();
 	var factorA = gui.add(parameters, "fa").min(0).max(10).step(1).listen();
 	var factorB = gui.add(parameters, "fb").min(0).max(10).step(1).listen();
 	var factorC = gui.add(parameters, "fc").min(0).max(10).step(1).listen();
@@ -169,6 +175,19 @@ function iniHelper(){
 	var phaseY = gui.add(parameters, "phaseY").min(0).max(10).step(1).listen();
 	var phaseZ = gui.add(parameters, "phaseZ").min(0).max(10).step(1).listen();
 	//var step = gui.add(parameters, "step").min(0.01).max(0.1).step(0.01).listen();
+
+	sizeX.onChange(function(value){
+		lissajousCurve.sizeX = value;
+		lissajousCurve.update();
+	});
+	sizeY.onChange(function(value){
+		lissajousCurve.sizeY = value;
+		lissajousCurve.update();
+	});
+	sizeZ.onChange(function(value){
+		lissajousCurve.sizeZ = value;
+		lissajousCurve.update();
+	});
 
 	factorA.onChange(function(value){
 		lissajousCurve.fa = value;

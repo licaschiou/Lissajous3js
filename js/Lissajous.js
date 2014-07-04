@@ -23,6 +23,11 @@ function LissajousCurve(){
     this.meshType = parameters.meshType;
     this.meterial = parameters.material;
     this.color = parameters.color;
+
+    this.sizeX = parameters.sizeX;
+    this.sizeY = parameters.sizeY;
+    this.sizeZ = parameters.sizeZ;
+
     this.fa = parameters.fa;
     this.fb = parameters.fb;
     this.fc = parameters.fc;
